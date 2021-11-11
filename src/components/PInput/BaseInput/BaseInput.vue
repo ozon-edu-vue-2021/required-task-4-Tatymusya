@@ -140,7 +140,6 @@ export default {
         },
         emitInput(value) {
             this.$emit('input', value);
-            this.focus();
         },
         onFocus() {
             this.$emit('focus');

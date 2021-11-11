@@ -40,21 +40,33 @@
         </p-base-input>
         <div 
             v-show="isOpen" 
-            :class="$style.pAList" 
+            ref="listWrapper"
+            :class="$style.pAListWrapper" 
             @click.stop
         >
-            <template v-if="filteredSuggests.length">
-                <p-list
-                    :list-content="filteredSuggests"
-                    :prop-text="suggestionLabel"
-                    id="listCitizenships"
-                    :has-option="Boolean(true)"
-                    tabindex="-1"
-                    :active-item="filteredSuggests[current]"
-                    @select="onSelectSuggest"
-                />
-            </template>
-            <div v-else>Ничего не найдено</div>
+            <ul 
+                :class="$style.pAList"
+                ref="list"
+                tabindex="-1"
+                id="listCitizenships"
+            >
+                <li
+                    v-for="item in filteredSuggests"
+                    :key="item[suggestionId]"
+                    :id="item[suggestionId]"
+                    role="option"
+                    tabindex="0"
+                    :aria-selected="Boolean(item[suggestionId] === filteredSuggests[current][suggestionId])"
+                    ref="listItem"
+                    :class="{ 
+                        [$style.pAListItem]: true,
+                        [$style.pAListItemActive]: item[suggestionId] === filteredSuggests[current][suggestionId] 
+                    }"
+                    @click="onSelectSuggest(item)"
+                >
+                    {{item[suggestionLabel]}}
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -64,7 +76,6 @@ import PBaseInput from '@/components/PInput/BaseInput/BaseInput.vue';
 import clickOutside from '@/directives/clickOutside';
 import PButton from '@/components/PButton/PButton.vue';
 import PIconArrow from '@/components/PIcon/PIconArrow.vue';
-import PList from '@/components/PList/PList.vue';
 import { debounce } from 'lodash';
 
 export default {
@@ -72,7 +83,6 @@ export default {
         PBaseInput,
         PIconArrow,
         PButton,
-        PList,
     },
     name: 'PAutocomplete',
     directives: {
@@ -119,6 +129,10 @@ export default {
             current: 0,
             focus: false,
             isOpen: false,
+            listHeight: 0,
+            listItemHeight: 0,
+            listWrapperHeight: 0,
+            scroll: 0,
         };
     },
     computed: {
@@ -128,20 +142,61 @@ export default {
             }
             return this.suggestions.find((item) => item.id === this.value);
         },
+        listItemLimit() {
+            return this.filteredSuggests.length - 1;
+        }
     },
     methods: {
+        setListWrapperHeight(elem) {
+            this.listWrapperHeight = elem.offsetHeight;
+        },
+        setListItemHeight(elem) {
+            this.listItemHeight = elem.offsetHeight;
+        },
+        setListHeight(elem) {
+            this.listHeight = elem.offsetHeight;
+        },
+        getHDifferenceItemWrap() {
+            return this.calcScroll() - this.listWrapperHeight;
+        },
+        getHDifferenceListWrap() {
+            return this.listHeight - this.listWrapperHeight;
+        },
+        calcScroll() {
+            const nextIndex = this.current + 1;
+            this.scroll = Number(this.listItemHeight) * nextIndex;
+            return this.scroll;
+        },
+        onScroll() {
+            const list = this.$refs.listWrapper;
+            if(this.scroll > this.listHeight) {
+                list.scrollTop = 0;
+            } else {
+                list.scrollTop = this.getHDifferenceItemWrap();
+            }
+        },
         onEnter() {
             this.onSelectSuggest(this.filteredSuggests[this.current]);
+            this.closeList();
         },
         onDown() {
-            if (this.current < this.filteredSuggests.length - 1) {
+            if (this.current < this.listItemLimit) {
                 this.current += 1;
+
+                this.onScroll();
+                return false;
             }
+
+            this.current = 0;
+            this.onScroll();
+
         },
         onUp() {
             if (this.current > 0) {
-                this.current--;
+                this.current -= 1;
             }
+
+            this.onScroll();
         },
         toogle() {
             this.isOpen = !this.isOpen;
@@ -156,11 +211,20 @@ export default {
             if (this.searchValue.length) {
                 this.filter();
                 this.isOpen = true;
+                this.setOptionList();
                 return false;
             }
-
+        
             this.filteredSuggests = this.suggestions;
             this.isOpen = true;
+            this.setOptionList();
+        },
+        setOptionList() {
+            this.$nextTick(() => {
+                this.setListWrapperHeight(this.$refs.listWrapper);
+                this.setListHeight(this.$refs.list);
+                this.setListItemHeight(this.$refs.listItem[0]);
+            });
         },
         closeList() {
             this.isOpen = false;
@@ -192,9 +256,9 @@ export default {
     padding: 0 12px;
     line-height: 34px;
 }
-.pAList {
+.pAListWrapper {
     width: 100%;
-    max-height: 120px;
+    height: 120px;
     overflow: auto;
     position: absolute;
     left: 0;
@@ -203,6 +267,22 @@ export default {
     border: 1px solid #eff1f8;
     border-top: none;
     z-index: 2;
+}
+.pAList {
+    margin: 0;
+    padding: 0;
+}
+.pAListItem {
+    list-style-type: none;
+    padding: 4px 6px;
+}
+.pAListItemActive {
+    background: gray;
+}
+@media (hover: hover) {
+    .pAListItem:not(.pAListItemActive):hover {
+        background: #eee;
+    }
 }
 .pAToogleBtn {
     background: none;
