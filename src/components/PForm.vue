@@ -90,7 +90,8 @@
                     >
                         <p-datepicker 
                             :lang="lang" 
-                            :model="personalData.birthday"
+                            :error="errors[0]"
+                            v-model="personalData.birthday"
                             label="Дата рождения"
                         ></p-datepicker>
                         <span 
@@ -182,7 +183,8 @@
                             <label>Дата выдачи</label>
                             <p-datepicker
                                 :lang="lang"
-                                :model="personalData.dateIssue"
+                                :error="errors[0]"
+                                v-model="personalData.dateIssue"
                             ></p-datepicker>
                             <span 
                                 v-if="errors"
@@ -194,7 +196,7 @@
                         <div v-if="!isRussiaSelected">
                             <validation-provider
                                 v-slot="{ errors }"
-                                rules="required|requireEnglish"
+                                rules="requireEnglish"
                                 tag="div"
                                 :class="$style.pFormRow"
                             >
@@ -212,7 +214,7 @@
                             </validation-provider>
                             <validation-provider
                                 v-slot="{ errors }"
-                                rules="required|requireEnglish"
+                                rules="requireEnglish"
                                 tag="div"
                                 :class="$style.pFormRow"
                             >
@@ -358,11 +360,7 @@ export default {
                 citizenship: '',
                 passportNumber: '',
                 changeInitials: false,
-                lastNameLatin: '',
-                nameLatin: '',
                 birthday: '',
-                changedLastname: '',
-                changedName: ''
             },
         };
     },

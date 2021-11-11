@@ -15,11 +15,8 @@ export const initValidator = (config = {}) => {
     });
     extend('beforeToday', {
         validate: function(value) {
-            console.log(value);
-            const lastDate = new Date(value);
             const newDate = new Date();
-            console.log(lastDate < newDate);
-            return lastDate < newDate;
+            return value < newDate;
         },
         message: 'Дата не позже сегодняшнего числа'
     });

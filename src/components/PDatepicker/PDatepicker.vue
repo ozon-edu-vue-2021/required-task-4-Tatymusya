@@ -8,8 +8,11 @@
         </label>
         <date-picker
             :lang="lang"
-            v-model="value"
-            :class="$style.pDControl"
+            :value="value"
+            :class="{[$style.pDControl]: true, [$style.pDControlError]: error}"
+            @focus="onFocus"
+            @blur="onBlur"
+            @input="onInput"
         ></date-picker>
     </div>
 </template>
@@ -26,18 +29,27 @@ export default {
         lang: {
             type: Object
         },
-        model: {
-            type: String
+        value: {
+            type: [Date, String]
         },
         label: {
             type: String,
             default: ''
-        }
+        },
+        error: {
+            type: String
+        },
     },
-    data() {
-        return {
-            value: this.model
-        }
+    methods: {
+        onInput(value) {
+            this.$emit('input', value);
+        },
+        onFocus(value) {
+            this.$emit('focus', value);
+        },
+        onBlur(value) {
+            this.$emit('blur', value);
+        },
     }
 }
 </script>
@@ -51,5 +63,8 @@ export default {
     }
     .pDControl {
         margin-top: 6px;
+    }
+    .pDControlError [type="text"] {
+        border-color: red;
     }
 </style>
