@@ -1,36 +1,41 @@
 <template>
-  <div id="app">
-    <Form />
-  </div>
+    <div id="app">
+        <p-form />
+    </div>
 </template>
 
 <script>
-import Form from "./components/Form.vue";
+import PForm from './components/PForm.vue';
 
 export default {
-  name: "App",
-  components: {
-    Form,
-  },
+    name: 'App',
+    components: {
+        PForm,
+    },
 };
 </script>
 
 <style>
+body {
+    padding: 0;
+    margin: 0;
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  color: #2c3e50;
-  background-color: #fafafa;
-  padding: 24px;
-  box-sizing: border-box;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    color: #2c3e50;
+    background-color: #fafafa;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
 html,
 body,
 #app {
-  height: 100%;
+    min-height: 100%;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 </style>
