@@ -9,9 +9,14 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "lodash": "^4.17.21",
+    "tailwindcss": "^2.2.19",
+    "vee-validate": "^3.4.13",
     "vue": "^2.6.11",
     "vue-svg-loader": "^0.16.0",
-    "vuedraggable": "^2.24.3"
+    "vue2-datepicker": "^3.10.2",
+    "vuedraggable": "^2.24.3",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
