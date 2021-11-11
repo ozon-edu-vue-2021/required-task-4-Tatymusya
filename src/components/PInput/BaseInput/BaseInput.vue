@@ -32,8 +32,7 @@
                 :id="id"
                 @focus="onFocus"
                 @blur="onBlur"
-                @input="onInput($event.target.value)"
-                @change="onChange"
+                @input="onInput($event)"
                 @keydown.enter="onEnter"
                 @keydown.down="onDown"
                 @keydown.up="onUp"
@@ -130,18 +129,18 @@ export default {
         },
     },
     methods: {
-        onInput(value) {
+        onInput(event) {
+            if (this.isRadio) {
+                this.emitInput(this.opt);
+            } else if (this.isCheckbox) {
+                this.emitInput(event.target.checked);
+            } else {
+                this.emitInput(event.target.value);
+            }
+        },
+        emitInput(value) {
             this.$emit('input', value);
             this.focus();
-        },
-        onChange(event, value) {
-            if (this.type === 'radio') {
-                this.onInput(this.opt);
-            } else if (this.type === 'checkbox') {
-
-                console.log(event.target.value)
-                this.onInput(Boolean(!value));
-            }
         },
         onFocus() {
             this.$emit('focus');

@@ -374,8 +374,7 @@ export default {
             return this.isRussiaSelected ? 'digits:6' : '';
         },
         hasChangedInitials() {
-            console.log(this.personalData.changedInitials);
-            return this.personalData.changedInitials;
+            return this.personalData.changeInitials;
         }
     },
     methods: {
